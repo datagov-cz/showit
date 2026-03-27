@@ -43,3 +43,19 @@ export const rdfs = createNamespace({
   prefix: "rdfs:",
   terms: ["domain", "range", "subClassOf"],
 } as const);
+
+export const slovníky = createNamespace({
+  iri: "https://slovník.gov.cz/generický/datový-slovník-ofn-slovníků/pojem/",
+  prefix: "slovníky",
+  terms: [
+    "slovník",
+    "pojem",
+    "okamžik-poslední-změny",
+    "okamžik-vytvoření",
+    "související-ustanovení",
+    "definující-ustanovení",
+    "definující-nelegislativní-zdroj",
+    "související-nelegislativní-zdroj",
+    "má-instance-definované-číselníkem",
+  ],
+} as const);

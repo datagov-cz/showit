@@ -1,9 +1,9 @@
 import { createResource, SchemaInterface } from "ldkit";
-import { dcterms, ldkit, rdf, skos } from "ldkit/namespaces";
+import { ldkit, rdf, schema, skos } from "ldkit/namespaces";
 
-import { context } from "./context";
-import { owl, rdfs, zSgovPojem } from "./namespaces";
 import { $ } from "ldkit/sparql";
+import { context } from "./context";
+import { owl, rdfs, slovníky, zSgovPojem } from "./namespaces";
 import { n } from "./utils";
 import { HIDDEN_VOCABULARY } from "./vocabularies";
 
@@ -49,7 +49,19 @@ const TermSchema = {
     "@array": true,
   },
   source: {
-    "@id": dcterms.source,
+    "@id": slovníky["definující-ustanovení"],
+    "@optional": true,
+  },
+  altSource: {
+    "@id": slovníky["související-ustanovení"],
+    "@optional": true,
+  },
+  nonLegalSource: {
+    "@id": slovníky["definující-nelegislativní-zdroj"],
+    "@optional": true,
+  },
+  altNonLegalSource: {
+    "@id": slovníky["související-nelegislativní-zdroj"],
     "@optional": true,
   },
   parentTerms: {
@@ -63,6 +75,30 @@ const TermSchema = {
     "@optional": true,
     "@array": true,
     "@context": TermBaseSchema,
+  },
+} as const;
+
+const TermSourcesSchema = {
+  "@type": skos.Concept,
+  source: {
+    "@id": slovníky["definující-ustanovení"],
+    "@array": true,
+    "@optional": true,
+  },
+  altSource: {
+    "@id": slovníky["související-ustanovení"],
+    "@array": true,
+    "@optional": true,
+  },
+  nonLegalSource: {
+    "@id": slovníky["definující-nelegislativní-zdroj"],
+    "@array": true,
+    "@optional": true,
+  },
+  altNonLegalSource: {
+    "@id": slovníky["související-nelegislativní-zdroj"],
+    "@array": true,
+    "@optional": true,
   },
 } as const;
 
@@ -95,6 +131,8 @@ export type TermRelationsInterface = SchemaInterface<
   typeof TermRelationsSchema
 >;
 
+export type TermSourceInterface = SchemaInterface<typeof TermSourcesSchema>;
+
 export type TermInterface = SchemaInterface<typeof TermSchema>;
 
 export type TermBaseInterface = SchemaInterface<typeof TermBaseSchema>;
@@ -104,8 +142,37 @@ export const TermsTypes = createResource(TermTypesSchema, context);
 
 export const TermsRelationsResource = createResource(
   TermRelationsSchema,
-  context
+  context,
 );
+
+export const TermsSourcesResource = createResource(TermSourcesSchema, context);
+
+export const getTermSourcesQuery = (termIri: string) => {
+  const query = $`
+  CONSTRUCT { 
+    ?term a ${n(skos.Concept)} ; a ${n(ldkit.Resource)} .
+    ?term ${n(slovníky["definující-ustanovení"])} ?source .
+    ?term ${n(slovníky["související-ustanovení"])} ?altSource .
+    ?term ${n(slovníky["definující-nelegislativní-zdroj"])} ?nonLegalSource .
+    ?term ${n(
+      slovníky["související-nelegislativní-zdroj"],
+    )} ?altNonLegalSource .
+  } WHERE {
+    BIND(${n(termIri)} as ?term)
+    OPTIONAL {?term ${n(slovníky["definující-ustanovení"])} ?source .}
+    OPTIONAL {?term ${n(slovníky["související-ustanovení"])} ?altSource .}
+    OPTIONAL {?term ${n(slovníky["definující-nelegislativní-zdroj"])} ?nlsBlank.
+              ?nlsBlank ${schema.url} ?nonLegalSource.
+    }
+    OPTIONAL {?term ${n(
+      slovníky["související-nelegislativní-zdroj"],
+    )} ?anlsBlank.
+              ?anlsBlank ${schema.url} ?altNonLegalSource.
+    }
+  }
+  `.toString();
+  return query;
+};
 
 export const getTermRelationsQuery = (termIri: string) => {
   const query = $`
@@ -125,7 +192,7 @@ WHERE {
   {
     ?domain ${n(rdfs.subClassOf)} ?domainRestriction . 
     ?domainRestriction ${n(owl.someValuesFrom)} ?term ; ${n(
-    owl.onProperty
+    owl.onProperty,
   )} ${n(zSgovPojem["má-vztažený-prvek-1"])} .
     ?domain ${n(skos.prefLabel)} ?label .
     ?domain ${n(skos.inScheme)} ?vocabulary .
@@ -134,7 +201,7 @@ WHERE {
   UNION{
       ?domain ${n(rdfs.subClassOf)} ?domainRestriction . 
     ?domainRestriction ${n(owl.someValuesFrom)} ?term ; ${n(
-    owl.onProperty
+    owl.onProperty,
   )} ${n(zSgovPojem["je-vlastností"])} .
     ?domain ${n(skos.prefLabel)} ?label .
     ?domain ${n(skos.inScheme)} ?vocabulary .
@@ -169,7 +236,7 @@ WHERE {
   UNION {
     ?range ${n(rdfs.subClassOf)} ?rangeRestriction . 
     ?rangeRestriction ${n(owl.someValuesFrom)} ?term ; ${n(owl.onProperty)} ${n(
-    zSgovPojem["má-vztažený-prvek-2"]
+    zSgovPojem["má-vztažený-prvek-2"],
   )} .
     ?range ${n(skos.prefLabel)} ?label2 .
     ?range ${n(skos.inScheme)} ?vocabulary2 .
@@ -203,7 +270,7 @@ WHERE {
   {
     ?term ${n(rdfs.subClassOf)} ?domainRestriction . 
     ?domainRestriction ${n(owl.someValuesFrom)} ?domain ; ${n(
-    owl.onProperty
+    owl.onProperty,
   )} ${n(zSgovPojem["má-vztažený-prvek-1"])} .
     ?domain ${n(skos.prefLabel)} ?label .
     ?domain ${n(skos.inScheme)} ?vocabulary .
@@ -213,7 +280,7 @@ WHERE {
   UNION {
     ?term ${n(rdfs.subClassOf)} ?domainRestriction . 
     ?domainRestriction ${n(owl.allValuesFrom)} ?domain ; ${n(
-    owl.onProperty
+    owl.onProperty,
   )} ${n(zSgovPojem["je-vlastností"])} .
     ?domain ${n(skos.prefLabel)} ?label .
     ?domain ${n(skos.inScheme)} ?vocabulary .
@@ -236,7 +303,7 @@ WHERE {
   UNION {
     ?term ${n(rdfs.subClassOf)} ?rangeRestriction . 
     ?rangeRestriction ${n(owl.someValuesFrom)} ?range ; ${n(
-    owl.onProperty
+    owl.onProperty,
   )} ${n(zSgovPojem["má-vztažený-prvek-2"])} .
     ?range ${n(skos.prefLabel)} ?label2 .
     ?range ${n(skos.inScheme)} ?vocabulary2 .

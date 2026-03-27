@@ -23,7 +23,12 @@ const TermDefinition: React.FC<DefinitionProps> = ({ term }) => {
     <DefinitionWrapper
       illustration={illustration}
       definition={term.definition}
-      source={term.source}
+      source={
+        term.source ||
+        term.altSource ||
+        term.nonLegalSource ||
+        term.altNonLegalSource
+      }
     />
   );
 };

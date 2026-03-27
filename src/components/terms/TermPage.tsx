@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@mui/material";
-import { useRelations, useTerm } from "../../api/TermAPI";
+import { useRelations, useSources, useTerm } from "../../api/TermAPI";
 import NoResults from "../search/NoResults";
 import TermHeader from "./TermHeader";
 import TermDefinition from "./TermDefinition";
@@ -16,19 +16,25 @@ const TermPage: React.FC = () => {
   const termIRI = routeQuery.get("iri") ?? "";
 
   const { data, isLoading, isSuccess, isError } = useTerm(
-    generateTermBase(termIRI)
+    generateTermBase(termIRI),
   );
+
+  const {
+    isLoading: sourceIsLoading,
+    isSuccess: sourceIsSuccess,
+    isError: sourceIsError,
+  } = useSources(data ?? undefined);
   //This hook is here to show the page when the relations are loaded
   const {
     isSuccess: rIsSuccess,
     isLoading: rIsLoading,
     isError: rIsError,
   } = useRelations(data ?? undefined);
-  if (isLoading || rIsLoading) return <Loader />;
+  if (isLoading || rIsLoading || sourceIsLoading) return <Loader />;
 
-  if (isError || rIsError || !data) return <ErrorPage />;
+  if (isError || rIsError || sourceIsError || !data) return <ErrorPage />;
 
-  if (rIsSuccess || isSuccess) {
+  if (rIsSuccess || isSuccess || sourceIsSuccess) {
     return (
       <Box>
         <TermHeader term={data} />
