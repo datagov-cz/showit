@@ -100,7 +100,9 @@ CONSTRUCT {
     }
     ?entity ${n(skos.inScheme)} ?vocabulary .
     ?vocabulary ${n(skos.prefLabel)} ?vocabularyTitle .
-    OPTIONAL { ?entity ${n(skos.definition)} ?definition . }
+    OPTIONAL { ?entity ${n(skos.definition)} ?defi . }
+    OPTIONAL { ?entity ${n(dcterms.description)} ?desc . }
+    BIND(COALESCE(?defi, ?desc) AS ?description)
     ?entity ${n(lucene.score)} ?initScore ;
             ${n(lucene.snippets)} _:s .
     _:s ${n(lucene.snippetText)} ?snippetText ;
@@ -118,7 +120,6 @@ CONSTRUCT {
   LIMIT 100
 }
 `.toString();
-
   return query;
 };
 

@@ -1,9 +1,9 @@
 import { createResource, SchemaInterface } from "ldkit";
-import { ldkit, rdf, schema, skos } from "ldkit/namespaces";
+import { ldkit, rdf, schema, skos, dcterms } from "ldkit/namespaces";
 
 import { $ } from "ldkit/sparql";
 import { context } from "./context";
-import { owl, rdfs, slovníky, zSgovPojem } from "./namespaces";
+import { owl, rdfs, slovniky, zSgovPojem } from "./namespaces";
 import { n } from "./utils";
 import { HIDDEN_VOCABULARY } from "./vocabularies";
 
@@ -39,6 +39,10 @@ export const TermBaseSchema = {
     "@id": skos.definition,
     "@optional": true,
   },
+  description: {
+    "@id": dcterms.description,
+    "@optional": true,
+  }
 } as const;
 
 const TermSchema = {
@@ -47,22 +51,6 @@ const TermSchema = {
     "@id": skos.altLabel,
     "@optional": true,
     "@array": true,
-  },
-  source: {
-    "@id": slovníky["definující-ustanovení"],
-    "@optional": true,
-  },
-  altSource: {
-    "@id": slovníky["související-ustanovení"],
-    "@optional": true,
-  },
-  nonLegalSource: {
-    "@id": slovníky["definující-nelegislativní-zdroj"],
-    "@optional": true,
-  },
-  altNonLegalSource: {
-    "@id": slovníky["související-nelegislativní-zdroj"],
-    "@optional": true,
   },
   parentTerms: {
     "@id": skos.broader,
@@ -81,22 +69,22 @@ const TermSchema = {
 const TermSourcesSchema = {
   "@type": skos.Concept,
   source: {
-    "@id": slovníky["definující-ustanovení"],
+    "@id": slovniky["definující-ustanovení"],
     "@array": true,
     "@optional": true,
   },
   altSource: {
-    "@id": slovníky["související-ustanovení"],
+    "@id": slovniky["související-ustanovení"],
     "@array": true,
     "@optional": true,
   },
   nonLegalSource: {
-    "@id": slovníky["definující-nelegislativní-zdroj"],
+    "@id": slovniky["definující-nelegislativní-zdroj"],
     "@array": true,
     "@optional": true,
   },
   altNonLegalSource: {
-    "@id": slovníky["související-nelegislativní-zdroj"],
+    "@id": slovniky["související-nelegislativní-zdroj"],
     "@array": true,
     "@optional": true,
   },
@@ -151,23 +139,21 @@ export const getTermSourcesQuery = (termIri: string) => {
   const query = $`
   CONSTRUCT { 
     ?term a ${n(skos.Concept)} ; a ${n(ldkit.Resource)} .
-    ?term ${n(slovníky["definující-ustanovení"])} ?source .
-    ?term ${n(slovníky["související-ustanovení"])} ?altSource .
-    ?term ${n(slovníky["definující-nelegislativní-zdroj"])} ?nonLegalSource .
+    ?term ${n(slovniky["definující-ustanovení"])} ?source .
+    ?term ${n(slovniky["související-ustanovení"])} ?altSource .
+    ?term ${n(slovniky["definující-nelegislativní-zdroj"])} ?nonLegalSource .
     ?term ${n(
-      slovníky["související-nelegislativní-zdroj"],
-    )} ?altNonLegalSource .
+    slovniky["související-nelegislativní-zdroj"],
+  )} ?altNonLegalSource .
   } WHERE {
     BIND(${n(termIri)} as ?term)
-    OPTIONAL {?term ${n(slovníky["definující-ustanovení"])} ?source .}
-    OPTIONAL {?term ${n(slovníky["související-ustanovení"])} ?altSource .}
-    OPTIONAL {?term ${n(slovníky["definující-nelegislativní-zdroj"])} ?nlsBlank.
-              ?nlsBlank ${schema.url} ?nonLegalSource.
+    OPTIONAL {?term ${n(slovniky["definující-ustanovení"])} ?source .}
+    OPTIONAL {?term ${n(slovniky["související-ustanovení"])} ?altSource .}
+    OPTIONAL {?term ${n(slovniky["definující-nelegislativní-zdroj"])} ?nlsBlank.
+              ?nlsBlank ${n(schema.url)} ?nonLegalSource.
     }
-    OPTIONAL {?term ${n(
-      slovníky["související-nelegislativní-zdroj"],
-    )} ?anlsBlank.
-              ?anlsBlank ${schema.url} ?altNonLegalSource.
+    OPTIONAL {?term ${n(slovniky["související-nelegislativní-zdroj"])} ?anlsBlank.
+              ?anlsBlank ${n(dcterms.title)} ?altNonLegalSource.
     }
   }
   `.toString();

@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
 
+import { isProperty } from "../utils/TermUtils";
 import {
   getPropertyRelationsQuery,
   getTermRelationsQuery,
@@ -15,7 +16,6 @@ import {
   TermsTypes,
 } from "./data/terms";
 import { HIDDEN_VOCABULARY } from "./data/vocabularies";
-import { isProperty } from "../utils/TermUtils";
 
 // This is a supertype of TermBaseInterface containing term id and vocabulary id
 export type TermBase = Pick<TermBaseInterface, "$id"> & {
@@ -92,9 +92,9 @@ export const useRelations = (term: TermInterface | undefined) => {
   });
 };
 
-export const useSources = (term: TermInterface | undefined) => {
+export const useSources = (term: TermBase | undefined) => {
   return useQuery(["sources", term?.$id], () => getSources(term), {
-    enabled: !!term,
+    enabled: !!term?.$id,
     notifyOnChangeProps: ["data", "isError"],
   });
 };

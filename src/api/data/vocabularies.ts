@@ -44,7 +44,9 @@ export const getVocabularyTermsQuery = (vocabularyIri: string) => {
     ?iri a ${n(skos.Concept)} ;
       ${n(skos.inScheme)} ${n(vocabularyIri)} ;
       ${n(skos.prefLabel)} ?label .
-    OPTIONAL { ?iri ${n(skos.definition)} ?definition . }
+    OPTIONAL { ?iri ${n(skos.definition)} ?defi . }
+    OPTIONAL { ?iri ${n(dcterms.description)} ?desc . }
+    BIND(COALESCE(?defi, ?desc) as ?definition)
   }
   `.toString();
 

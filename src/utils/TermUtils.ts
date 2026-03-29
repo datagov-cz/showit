@@ -7,7 +7,7 @@ export const isTermEmpty = (term: TermInterface) => {
     !term.parentTerms.length &&
     !term.subTerms.length &&
     !term.definition &&
-    !term.source
+    !term.description
   );
 };
 

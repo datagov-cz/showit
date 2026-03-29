@@ -20,10 +20,11 @@ const TermPage: React.FC = () => {
   );
 
   const {
+    data: sourceData,
     isLoading: sourceIsLoading,
     isSuccess: sourceIsSuccess,
     isError: sourceIsError,
-  } = useSources(data ?? undefined);
+  } = useSources(generateTermBase(termIRI));
   //This hook is here to show the page when the relations are loaded
   const {
     isSuccess: rIsSuccess,
@@ -38,7 +39,7 @@ const TermPage: React.FC = () => {
     return (
       <Box>
         <TermHeader term={data} />
-        <TermDefinition term={data} />
+        <TermDefinition term={data} sources={sourceData ?? undefined} />
         <Hierarchy term={data} />
         {/**Relations component checks if the term is empty, because it is the last one**/}
         <Relations term={data} />
