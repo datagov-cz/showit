@@ -35,24 +35,24 @@ export const getTerm = async (term: TermBase) => {
   (data.$type as string[]) = types[0].$type;
   //Removes all mentions of terms coming from hidden vocabulary
   (data.parentTerms as TermBaseInterface[]) = data.parentTerms.filter(
-    (term) => term.vocabulary.$id !== HIDDEN_VOCABULARY,
+    (term) => term.vocabulary.$id !== HIDDEN_VOCABULARY
   );
   (data.subTerms as TermBaseInterface[]) = data.subTerms.filter(
-    (term) => term.vocabulary.$id !== HIDDEN_VOCABULARY,
+    (term) => term.vocabulary.$id !== HIDDEN_VOCABULARY
   );
 
   return data;
 };
 
 export const getRelations = async (
-  term: TermInterface | undefined,
+  term: TermInterface | undefined
 ): Promise<TermRelationsInterface[]> => {
   if (typeof term === "undefined") {
     return Promise.reject("Invalid term");
   }
   if (isProperty(term)) {
     return await TermsRelationsResource.query(
-      getPropertyRelationsQuery(term.$id),
+      getPropertyRelationsQuery(term.$id)
     );
   } else {
     return await TermsRelationsResource.query(getTermRelationsQuery(term.$id));
@@ -60,7 +60,7 @@ export const getRelations = async (
 };
 
 export const getSources = async (
-  term: TermBase | undefined,
+  term: TermBase | undefined
 ): Promise<TermSourceInterface[]> => {
   if (typeof term === "undefined") {
     return Promise.reject("Invalid term");

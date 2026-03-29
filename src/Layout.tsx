@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import { Box, styled } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import ScrollToTopButton from "./ScrollToTopButton";
+import { SINGLE_VOCABULARY_MODE } from "./app/variables";
 
 const FullSizedBox = styled(Box)({
   minHeight: "100vh",
@@ -31,7 +32,7 @@ const Layout: React.FC = (props) => {
 
   return (
     <FullSizedBox>
-      <Header showSearch={showSearch} />
+      <Header showSearch={SINGLE_VOCABULARY_MODE ? false : showSearch} />
       <ContentBox>{props.children}</ContentBox>
       <Footer showImage={showIllustration} />
       <ScrollToTopButton />

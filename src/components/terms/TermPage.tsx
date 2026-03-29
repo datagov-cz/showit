@@ -16,7 +16,7 @@ const TermPage: React.FC = () => {
   const termIRI = routeQuery.get("iri") ?? "";
 
   const { data, isLoading, isSuccess, isError } = useTerm(
-    generateTermBase(termIRI),
+    generateTermBase(termIRI)
   );
 
   const {

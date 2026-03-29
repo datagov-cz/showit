@@ -110,8 +110,8 @@ CONSTRUCT {
     FILTER (lang(?label) = "cs")
     FILTER (?vocabulary != ${n(HIDDEN_VOCABULARY)})
     BIND(IF(lcase(str(?snippetText)) = lcase(str(${l(
-    exactMatchString
-  )})), ?initScore * 2, IF(CONTAINS(lcase(str(?snippetText)), ${l(
+      exactMatchString
+    )})), ?initScore * 2, IF(CONTAINS(lcase(str(?snippetText)), ${l(
     text
   )}), IF(?snippetField = "label", ?initScore * 1.5, ?initScore), ?initScore)) as ?exactMatchScore)
     BIND(IF(?snippetField = "label", ?exactMatchScore * 2, IF(?snippetField = "definition", ?exactMatchScore * 1.2, ?exactMatchScore)) as ?score)
@@ -161,8 +161,8 @@ CONSTRUCT {
     FILTER (lang(?label) = "cs")
     FILTER (?entity != ${n(HIDDEN_VOCABULARY)})
     BIND(IF(lcase(str(?snippetText)) = lcase(str(${l(
-    exactMatchString
-  )})), ?initScore * 2, IF(CONTAINS(lcase(str(?snippetText)), ${l(
+      exactMatchString
+    )})), ?initScore * 2, IF(CONTAINS(lcase(str(?snippetText)), ${l(
     text
   )}), IF(?snippetField = "title", ?initScore * 1.5, ?initScore), ?initScore)) as ?exactMatchScore)
     BIND(IF(?snippetField = "title", ?exactMatchScore * 2, IF(?snippetField = "description", ?exactMatchScore * 1.2, ?exactMatchScore)) as ?score)
