@@ -35,7 +35,7 @@ const InitialLocationFix: React.FC = () => {
 
 const Router: React.FC = () => {
   return (
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <BrowserRouter basename={PUBLIC_PATH}>
       <InitialLocationFix />
       <ScrollToTop />
       <Layout>
